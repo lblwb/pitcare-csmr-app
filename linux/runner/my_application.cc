@@ -90,7 +90,7 @@ static void my_application_activate(GApplication* application) {
   gboolean use_header_bar = TRUE;
 
   // Title bar varibale = text "Анализы Просто"
-  const char* title_bar = "Анализы Просто";
+  const char* title_bar = "PitCare";
 
   if (use_header_bar) {
     GtkHeaderBar* header_bar = GTK_HEADER_BAR(gtk_header_bar_new());

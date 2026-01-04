@@ -1,9 +1,6 @@
 #include "my_application.h"
 
 #include <flutter_linux/flutter_linux.h>
-#ifdef GDK_WINDOWING_X11
-#include <gdk/gdkx.h>
-#endif
 
 #include "flutter/generated_plugin_registrant.h"
 
@@ -13,6 +10,64 @@ struct _MyApplication {
 };
 
 G_DEFINE_TYPE(MyApplication, my_application, GTK_TYPE_APPLICATION)
+
+// Function to update the time label
+static gboolean update_time(GtkWidget* label) {
+  GDateTime* now = g_date_time_new_now_local();
+  gchar* time_str = g_date_time_format(now, "%H:%M");
+  gtk_label_set_text(GTK_LABEL(label), time_str);
+  g_free(time_str);
+  g_date_time_unref(now);
+  return TRUE; // Continue calling
+}
+
+// Function to create the status bar widget
+static GtkWidget* create_status_bar() {
+  GtkWidget* box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+
+  // Time label on the left
+  GtkWidget* time_label = gtk_label_new("");
+  gtk_box_pack_start(GTK_BOX(box), time_label, FALSE, FALSE, 10);
+
+  // Spacer to push elements to the right
+  GtkWidget* spacer = gtk_label_new("");
+  gtk_box_pack_start(GTK_BOX(box), spacer, TRUE, TRUE, 0);
+
+  // Battery label on the right
+  GtkWidget* battery_label = gtk_label_new("100%");
+  gtk_box_pack_end(GTK_BOX(box), battery_label, FALSE, FALSE, 10);
+
+  // Signal label on the right
+  GtkWidget* signal_label = gtk_label_new("WiFi");
+  gtk_box_pack_end(GTK_BOX(box), signal_label, FALSE, FALSE, 10);
+
+  // Apply CSS for styling
+  GtkCssProvider* provider = gtk_css_provider_new();
+  const char* css = "box { "
+    "background-color: #1a1a1a; "
+    "color: #FFFFFF; "
+    "padding: 8px 12px; "
+    "font-size: 13px; "
+    "border-top: 1px solid #333333; "
+  "} "
+  "label { "
+    "margin: 0px 5px; "
+  "}";
+  gtk_css_provider_load_from_data(provider, css, -1, NULL);
+  GtkStyleContext* context = gtk_widget_get_style_context(box);
+  gtk_style_context_add_provider(context, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+  g_object_unref(provider);
+
+  // Set fixed height for status bar
+  gtk_widget_set_size_request(box, -1, 50);
+
+  // Start updating time every second
+  g_timeout_add_seconds(1, (GSourceFunc)update_time, time_label);
+  update_time(time_label); // Initial update
+
+  gtk_widget_show_all(box);
+  return box;
+}
 
 // Called when first Flutter frame received.
 static void first_frame_cb(MyApplication* self, FlView* view) {
@@ -33,26 +88,29 @@ static void my_application_activate(GApplication* application) {
   // If running on Wayland assume the header bar will work (may need changing
   // if future cases occur).
   gboolean use_header_bar = TRUE;
-#ifdef GDK_WINDOWING_X11
-  GdkScreen* screen = gtk_window_get_screen(window);
-  if (GDK_IS_X11_SCREEN(screen)) {
-    const gchar* wm_name = gdk_x11_screen_get_window_manager_name(screen);
-    if (g_strcmp0(wm_name, "GNOME Shell") != 0) {
-      use_header_bar = FALSE;
-    }
-  }
-#endif
+
+  // Title bar varibale = text "Анализы Просто"
+  const char* title_bar = "Анализы Просто";
+
   if (use_header_bar) {
     GtkHeaderBar* header_bar = GTK_HEADER_BAR(gtk_header_bar_new());
     gtk_widget_show(GTK_WIDGET(header_bar));
-    gtk_header_bar_set_title(header_bar, "pit_care");
+    gtk_header_bar_set_title(header_bar, title_bar);
     gtk_header_bar_set_show_close_button(header_bar, TRUE);
     gtk_window_set_titlebar(window, GTK_WIDGET(header_bar));
   } else {
-    gtk_window_set_title(window, "pit_care");
+    gtk_window_set_title(window, title_bar);
   }
 
-  gtk_window_set_default_size(window, 1280, 720);
+  gtk_window_set_default_size(window, 420, 720);
+  gtk_window_set_position(window, GTK_WIN_POS_CENTER);
+  // max size for default size
+  gtk_window_set_resizable(window, FALSE);
+
+  // gtk_window_set_default_size(window, 1080, 2424);
+  // gtk_window_set_default_size(window, 400, 800);
+  //gtk_window_set_geometry_hints(window, NULL, GDK_HINT_MIN_SIZE | GDK_HINT_MAX_SIZE);
+
 
   g_autoptr(FlDartProject) project = fl_dart_project_new();
   fl_dart_project_set_dart_entrypoint_arguments(
@@ -65,7 +123,17 @@ static void my_application_activate(GApplication* application) {
   gdk_rgba_parse(&background_color, "#000000");
   fl_view_set_background_color(view, &background_color);
   gtk_widget_show(GTK_WIDGET(view));
-  gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(view));
+
+  // Create status bar
+  GtkWidget* status_bar = create_status_bar();
+
+  // Create main vertical box
+  GtkWidget* main_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+  gtk_box_pack_start(GTK_BOX(main_box), status_bar, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(main_box), GTK_WIDGET(view), TRUE, TRUE, 0);
+  gtk_widget_show(GTK_WIDGET(main_box));
+
+  gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(main_box));
 
   // Show the window when Flutter renders.
   // Requires the view to be realized so we can start rendering.

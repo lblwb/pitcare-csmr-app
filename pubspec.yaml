@@ -120,6 +120,8 @@ flutter:
     - assets/icons/ui/primary/
     - assets/icons/ui/nav/
     # 
+    - assets/icons/notifications/
+    # 
     - .env
 
   # fonts:

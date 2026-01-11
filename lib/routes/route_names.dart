@@ -4,10 +4,18 @@ abstract class RouteNames {
   static const String login = '/login';
   static const String profile = '/profile';
   static const String settings = '/settings';
+  static const String sos = '/sos';
   static const String addresses = '/addresses';
   static const String addressesBranches = '/addresses/branches';
+
+  //
+
+  // Services
+  static const String services = '/services';
+  static const String serviceDetail = '/services/detail';
   //
   static const String garage = '/garage';
+  static const String garageDetail = '/garage/detail';
 
   // Analyzes
   static const String analytics = '/analytics';
@@ -30,5 +38,5 @@ abstract class RouteNames {
   static const String partnershipProgram = '/profile/partnership';
   static const String aboutApp = '/profile/about';
   static const String technicalSupport = '/profile/support';
-  static const String notificationSettings = '/profile/notifications';
+  static const String notificationProfile = '/profile/notifications';
 }

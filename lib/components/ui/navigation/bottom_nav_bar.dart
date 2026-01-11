@@ -18,6 +18,27 @@ class BottomNavBar extends ConsumerWidget {
   final activeColorBtn = const Color(0xFF582FFF);
   final deactivateColorBtn = const Color(0xFFA2A2A2);
 
+  // Determine active color based on selected index
+  Color getActiveColorBtn() {
+    debugPrint('getActiveColorBtn: Selected Index: $selectedIndex');
+    switch (selectedIndex) {
+      case 2:
+        return Colors.redAccent;
+      default:
+        return activeColorBtn;
+    }
+  }
+
+  Color getDeactivateColorBtn() {
+    debugPrint('getDeactivateColorBtn: Selected Index: $selectedIndex');
+    switch (selectedIndex) {
+      // case 2:
+      //   return Colors.redAccent;
+      default:
+        return deactivateColorBtn;
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // final cartState = ref.watch(cartProvider);
@@ -57,8 +78,8 @@ class BottomNavBar extends ConsumerWidget {
         onTap: onItemTapped,
         //
         enableFeedback: true,
-        selectedItemColor: activeColorBtn,
-        unselectedItemColor: deactivateColorBtn,
+        selectedItemColor: getActiveColorBtn(),
+        unselectedItemColor: getDeactivateColorBtn(),
         //
         selectedLabelStyle: const TextStyle(
           fontFamily: 'Manrope',
@@ -96,11 +117,16 @@ class BottomNavBar extends ConsumerWidget {
             label: 'Гараж',
             tooltip: "Ваш гараж с автомобилями",
           ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.warning_amber_rounded, color: Colors.redAccent),
+            label: 'SOS',
+            tooltip: "Быстрая помощь на дороге",
+          ),
           BottomNavigationBarItem(
             icon: SvgPicture.asset(
               'assets/icons/ui/nav/map_point.svg',
               colorFilter: ColorFilter.mode(
-                selectedIndex == 2 ? activeColorBtn : deactivateColorBtn,
+                selectedIndex == 3 ? activeColorBtn : deactivateColorBtn,
                 BlendMode.srcIn,
               ),
             ),
@@ -112,7 +138,7 @@ class BottomNavBar extends ConsumerWidget {
             icon: SvgPicture.asset(
               'assets/icons/ui/nav/settings.svg',
               colorFilter: ColorFilter.mode(
-                selectedIndex == 3 ? activeColorBtn : deactivateColorBtn,
+                selectedIndex == 4 ? activeColorBtn : deactivateColorBtn,
                 BlendMode.srcIn,
               ),
             ),

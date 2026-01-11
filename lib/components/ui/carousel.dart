@@ -321,7 +321,7 @@ class CarouselSlide {
                     buttonStyle ??
                     TextButton.styleFrom(
                       foregroundColor: Colors.black87,
-                      backgroundColor: Colors.white24,
+                      backgroundColor: Colors.black,
                       minimumSize: const Size(106, 40),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),

@@ -1,0 +1,1 @@
+flutter build web --release --no-source-maps

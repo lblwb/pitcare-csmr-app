@@ -69,10 +69,13 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
     int newIndex = 0;
     if (location == RouteNames.home) {
       newIndex = 0;
-    } else if (location == RouteNames.garage) {
+    } else if (location == RouteNames.garage ||
+        location == RouteNames.garageDetail) {
       newIndex = 1;
-    } else if (location == RouteNames.addresses) {
+    } else if (location == RouteNames.sos) {
       newIndex = 2;
+    } else if (location == RouteNames.addresses) {
+      newIndex = 3;
     } else if (location == RouteNames.profile ||
         //Other pages profile
         // location == RouteNames.familyProfiles ||
@@ -81,9 +84,9 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
         location == RouteNames.partnershipProgram ||
         location == RouteNames.aboutApp ||
         location == RouteNames.technicalSupport ||
-        location == RouteNames.notificationSettings ||
+        location == RouteNames.notificationProfile ||
         location == RouteNames.editProfile) {
-      newIndex = 3;
+      newIndex = 4;
     }
     if (_selectedIndex != newIndex) {
       setState(() {
@@ -107,16 +110,19 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
     });
     switch (index) {
       case 0:
-        context.go(RouteNames.home);
+        context.push(RouteNames.home);
         break;
       case 1:
-        context.go(RouteNames.garage);
+        context.push(RouteNames.garage);
         break;
       case 2:
-        context.go(RouteNames.addresses);
+        context.push(RouteNames.sos);
         break;
       case 3:
-        context.go(RouteNames.settings);
+        context.push(RouteNames.addresses);
+        break;
+      case 4:
+        context.push(RouteNames.settings);
         break;
     }
   }
